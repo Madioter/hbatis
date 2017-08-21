@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "" "/com/madiot/builder/xml/hbatis-mapper.dtd" >
+<mapper namespace="test.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="test.domain.User">
+        <rowkey property="userName"/>
+        <result family="base-info" qualifier="user_pass" property="userPass" javaType="test.domain.UserPass"/>
+        <result family="base-info" qualifier="user_age" property="age"/>
+    </resultMap>
+
+    <!-- 单条新增 -->
+    <put id="put" parameterType="test.domain.User" tableName="t_user">
+        <selectKey value="#{userName}"/>
+        <set>
+            <column family="base-info" qualifier="user_pass" value="#{userPass,javaType=test.domain.UserPass}"/>
+            <column family="base-info" qualifier="user_age" value="#{age}"/>
+        </set>
+    </put>
+
+    <!-- 批量新增 -->
+    <put id="putBatch" parameterType="java.util.List" tableName="t_user">
+        <foreach collection="list" item="item" index="index">
+            <selectKey value="#{item.userName}"/>
+            <set>
+                <column family="base-info" qualifier="user_pass"
+                        value="#{item.userPass,javaType=test.domain.UserPass}"/>
+                <column family="base-info" qualifier="user_age" value="#{item.age}"/>
+            </set>
+        </foreach>
+    </put>
+
+    <delete id="delete" tableName="t_user">
+        <selectKey value="#{rowkey}"/>
+        <column family="base-info" timestamp="#{version}" type="before"/>
+    </delete>
+
+    <delete id="deleteBatch" tableName="t_user">
+        <foreach collection="list" item="item" index="index">
+            <selectKey value="#{item}"/>
+        </foreach>
+    </delete>
+
+    <select id="getById" tableName="t_user" resultMap="BaseResultMap">
+        <selectKey value="#{rowkey}"/>
+        <column family="base-info"/>
+        <where>
+            <versions maxVersions="3"/>
+        </where>
+    </select>
+
+    <select id="selectBaseInfo" tableName="t_user" resultMap="BaseResultMap" caching="10" batch="2">
+        <column family="base-info"/>
+        <filters operator="MUST_PASS_ONE">
+            <filter type="rowFilter" compareOp="LESS_OR_EQUAL">
+                <comparator type="binary" value="#{value, javaType=java.lang.String}"/>
+            </filter>
+            <filter type="columnPaginationFilter">
+                <param key="limit" value="1"/>
+                <param key="offset" value="1"/>
+            </filter>
+        </filters>
+        <where>
+            <limit startRow="aaa"/>
+        </where>
+    </select>
+</mapper>

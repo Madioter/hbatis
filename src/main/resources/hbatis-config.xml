@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "" "/com/madiot/builder/xml/hbatis-config.dtd" >
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="LOG4J"/>
+        <setting name="versionProvider" value="TIMESTAMP"/>
+    </settings>
+    <typeAliases>
+        <typeAlias type="test.domain.User" alias="user"/>
+    </typeAliases>
+    <typeHandlers>
+        <typeHandler handler="test.handler.UserPassHandler" javaType="test.domain.UserPass"/>
+    </typeHandlers>
+    <mappers>
+        <mapper resource="test/mapper/UserMapper.xml"/>
+    </mappers>
+    <!--<plugins>
+        <plugin interceptor="com.igdata.mybatis.plugin.MySqlPaginationInterceptor"></plugin>
+    </plugins>-->
+</configuration>
